@@ -1,9 +1,11 @@
 import cv2
 import numpy as np
-from tkinter import Tk, filedialog, Button, Label, Canvas, Scale, HORIZONTAL, Frame
+from tkinter import Tk, filedialog, Button, Label, Canvas, Scale, HORIZONTAL, Frame, Toplevel
 from tkinter import ttk
 from PIL import Image, ImageTk
+import matplotlib.pyplot as plt
 
+# Các hàm xử lý ảnh (tính năng cũ)
 def adjust_brightness(image, brightness=50):
     hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
     h, s, v = cv2.split(hsv)
@@ -35,10 +37,42 @@ def crop_and_resize(image, x, y, w, h, new_width, new_height):
     resized_image = cv2.resize(cropped_image, (new_width, new_height))
     return resized_image
 
+# Hàm tính toán và vẽ biểu đồ màu cục bộ
+def compute_local_color_histogram(image, x, y, width, height):
+    region = image[y:y+height, x:x+width]
+    hsv = cv2.cvtColor(region, cv2.COLOR_BGR2HSV)
+    
+    h_hist = cv2.calcHist([hsv], [0], None, [256], [0, 256])  # Hue
+    s_hist = cv2.calcHist([hsv], [1], None, [256], [0, 256])  # Saturation
+    v_hist = cv2.calcHist([hsv], [2], None, [256], [0, 256])  # Value
+    
+    return h_hist, s_hist, v_hist
+
+def show_local_color_histogram(image, x, y, width, height):
+    h_hist, s_hist, v_hist = compute_local_color_histogram(image, x, y, width, height)
+    
+    # Vẽ biểu đồ
+    plt.figure(figsize=(10, 5))
+    
+    plt.subplot(131)
+    plt.plot(h_hist, color='r')
+    plt.title('Hue Histogram')
+    
+    plt.subplot(132)
+    plt.plot(s_hist, color='g')
+    plt.title('Saturation Histogram')
+    
+    plt.subplot(133)
+    plt.plot(v_hist, color='b')
+    plt.title('Value Histogram')
+    
+    plt.tight_layout()
+    plt.show()
+
 class PhotoEditor:
     def __init__(self, root):
         self.root = root
-        self.root.title("Trình Chỉnh Sửa Ảnh")
+        self.root.title("Bộ lọc ảnh AI")
 
         # Title Label
         self.title_label = Label(self.root, text="Bộ lọc phong cách cá nhân", font=("Helvetica", 20, "bold"), fg="blue")
@@ -93,16 +127,26 @@ class PhotoEditor:
         self.btn_save = Button(self.control_frame, text="Lưu ảnh", command=self.save_image, relief="raised", font=("Arial", 12, "bold"), bg="#27AE60", fg="white")
         self.btn_save.grid(row=1, column=4, padx=10, pady=5)
 
+        # Biểu đồ màu cục bộ
+        self.btn_local_histogram = Button(self.control_frame, text="Biểu Đồ Màu Cục Bộ", command=self.display_local_color_histogram, relief="raised", font=("Arial", 12, "bold"), bg="#9B59B6", fg="white")
+        self.btn_local_histogram.grid(row=1, column=0, padx=10, pady=5)
+
+        # Thêm nút chuyển sang giao diện Bộ lọc cá nhân
+        self.btn_custom_filter = Button(self.control_frame, text="Bộ lọc Cá Nhân", command=self.show_custom_filter, relief="raised", font=("Arial", 12, "bold"), bg="#3498DB", fg="white")
+        self.btn_custom_filter.grid(row=0, column=0, padx=10, pady=5)
+
         self.image = None
         self.display_image = None
         self.history = []  # Lưu lại lịch sử ảnh để hoàn tác
 
     def open_image(self):
         file_path = filedialog.askopenfilename(filetypes=[("Image Files", "*.png;*.jpg;*.jpeg;*.bmp")])
-        if file_path:
-            self.image = cv2.imread(file_path)
-            self.history = [self.image.copy()]  # Lưu ảnh gốc vào lịch sử
-            self.display_image_on_canvas()
+        if file_path:  # Kiểm tra nếu file_path không rỗng (người dùng chọn file)
+           self.image = cv2.imread(file_path)
+           self.history = [self.image.copy()]  # Lưu ảnh gốc vào lịch sử
+           self.display_image_on_canvas()
+        else:
+           print("Không có file nào được chọn.")
 
     def save_image(self):
         if self.image is not None:
@@ -149,6 +193,61 @@ class PhotoEditor:
             image_pil = Image.fromarray(image_rgb)
             self.display_image = ImageTk.PhotoImage(image_pil)
             self.canvas.create_image(400, 300, image=self.display_image, anchor="center")
+
+    def display_local_color_histogram(self):
+        if self.image is not None:
+            x, y, width, height = 50, 50, 150, 150  # Vùng bạn muốn tính toán biểu đồ màu
+            show_local_color_histogram(self.image, x, y, width, height)
+
+    def show_custom_filter(self):
+        CustomFilterWindow(self.root, self)
+
+class CustomFilterWindow:
+    def __init__(self, root, parent_app):
+        self.root = root
+        self.parent_app = parent_app
+        self.top = Toplevel(root)
+        self.top.title("Bộ lọc cá nhân")
+
+        self.label = Label(self.top, text="Chỉnh sửa bộ lọc cá nhân", font=("Arial", 16))
+        self.label.pack(pady=10)
+
+        # Các thanh trượt cho bộ lọc cá nhân
+        self.hue_slider = Scale(self.top, from_=0, to=360, orient=HORIZONTAL, label="Hue (Màu sắc)", relief="sunken", sliderlength=20)
+        self.hue_slider.set(0)
+        self.hue_slider.pack(padx=10, pady=5)
+
+        self.saturation_slider = Scale(self.top, from_=0, to=100, orient=HORIZONTAL, label="Saturation (Bão hòa)", relief="sunken", sliderlength=20)
+        self.saturation_slider.set(100)
+        self.saturation_slider.pack(padx=10, pady=5)
+
+        self.brightness_slider = Scale(self.top, from_=0, to=100, orient=HORIZONTAL, label="Brightness (Độ sáng)", relief="sunken", sliderlength=20)
+        self.brightness_slider.set(50)
+        self.brightness_slider.pack(padx=10, pady=5)
+
+        self.apply_button = Button(self.top, text="Áp dụng bộ lọc", command=self.apply_filter, relief="raised", font=("Arial", 12, "bold"), bg="#3498DB", fg="white")
+        self.apply_button.pack(pady=20)
+
+    def apply_filter(self):
+        hue = self.hue_slider.get()
+        saturation = self.saturation_slider.get()
+        brightness = self.brightness_slider.get()
+
+        # Tạo bộ lọc tùy chỉnh
+        hsv = cv2.cvtColor(self.parent_app.image, cv2.COLOR_BGR2HSV)
+        h, s, v = cv2.split(hsv)
+
+        h = cv2.add(h, hue - 0)  # Điều chỉnh Hue
+        s = cv2.multiply(s, saturation / 100.0)  # Điều chỉnh Saturation
+        v = cv2.add(v, brightness - 50)  # Điều chỉnh Brightness
+        v = np.clip(v, 0, 255)
+
+        hsv = cv2.merge((h, s, v))
+        self.parent_app.image = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
+        
+        self.parent_app.history.append(self.parent_app.image.copy())  # Lưu lại lịch sử ảnh
+        self.parent_app.display_image_on_canvas()
+        self.top.destroy()
 
 if __name__ == "__main__":
     root = Tk()

@@ -1,0 +1,26 @@
+2025-01-18 14:23:58,148 - instabot version: 0.117.0 (bot) - INFO - Instabot version: 0.117.0 Started
+2025-01-18 14:23:58,148 - instabot version: 0.117.0 (bot) - DEBUG - Bot imported from C:\Users\ADMIN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\instabot\bot\bot.py
+2025-01-18 14:23:58,148 - instabot version: 0.117.0 (api_login) - INFO - Not yet logged in starting: PRE-LOGIN FLOW!
+2025-01-18 14:23:58,478 - instabot version: 0.117.0 (api) - DEBUG - POST to endpoint: accounts/get_prefill_candidates/ returned response: <Response [200]>
+2025-01-18 14:23:58,796 - instabot version: 0.117.0 (api) - DEBUG - POST to endpoint: qe/sync/ returned response: <Response [200]>
+2025-01-18 14:23:59,122 - instabot version: 0.117.0 (api) - DEBUG - POST to endpoint: launcher/sync/ returned response: <Response [200]>
+2025-01-18 14:23:59,696 - instabot version: 0.117.0 (api) - DEBUG - POST to endpoint: accounts/contact_point_prefill/ returned response: <Response [200]>
+2025-01-18 14:24:01,159 - instabot version: 0.117.0 (api) - DEBUG - POST to endpoint: accounts/login/ returned response: <Response [400]>
+2025-01-18 14:24:01,159 - instabot version: 0.117.0 (api) - DEBUG - Responsecode indicates error; response content: b'{"message":"challenge_required","challenge":{"url":"https://i.instagram.com/challenge/AXHT860M4MPPgz0INebIHHAmkpV-4fl47cpdBRbsC_kncu78VSrGJfpw0so5qs7WmCT_U0w/AfyYR4sq-zd8wu81VWSiE_mf8WFdzdHaP_qE5L5rHHsOsprHspQVp5AHENOeG0TU9GZmr3vmUNKJJQ/","api_path":"/challenge/AXHT860M4MPPgz0INebIHHAmkpV-4fl47cpdBRbsC_kncu78VSrGJfpw0so5qs7WmCT_U0w/AfyYR4sq-zd8wu81VWSiE_mf8WFdzdHaP_qE5L5rHHsOsprHspQVp5AHENOeG0TU9GZmr3vmUNKJJQ/","hide_webview_header":true,"lock":true,"logout":false,"native_flow":true,"flow_render_type":0},"status":"fail","error_type":"checkpoint_challenge_required"}'
+2025-01-18 14:24:01,159 - instabot version: 0.117.0 (api) - ERROR - Request returns 400 error!
+2025-01-18 14:24:01,160 - instabot version: 0.117.0 (api) - INFO - Instagram's error message: challenge_required
+2025-01-18 14:24:01,160 - instabot version: 0.117.0 (api) - INFO - Error type: checkpoint_challenge_required
+2025-01-18 14:24:13,117 - instabot version: 0.117.0 (bot) - INFO - Instabot version: 0.117.0 Started
+2025-01-18 14:24:13,118 - instabot version: 0.117.0 (bot) - DEBUG - Bot imported from C:\Users\ADMIN\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\instabot\bot\bot.py
+2025-01-18 14:24:13,118 - instabot version: 0.117.0 (api_login) - INFO - Not yet logged in starting: PRE-LOGIN FLOW!
+2025-01-18 14:24:13,422 - instabot version: 0.117.0 (api) - DEBUG - POST to endpoint: accounts/get_prefill_candidates/ returned response: <Response [200]>
+2025-01-18 14:24:14,022 - instabot version: 0.117.0 (api) - DEBUG - POST to endpoint: qe/sync/ returned response: <Response [200]>
+2025-01-18 14:24:14,368 - instabot version: 0.117.0 (api) - DEBUG - POST to endpoint: launcher/sync/ returned response: <Response [200]>
+2025-01-18 14:24:14,638 - instabot version: 0.117.0 (api) - DEBUG - POST to endpoint: accounts/contact_point_prefill/ returned response: <Response [200]>
+2025-01-18 14:24:16,125 - instabot version: 0.117.0 (api) - DEBUG - POST to endpoint: accounts/login/ returned response: <Response [400]>
+2025-01-18 14:24:16,125 - instabot version: 0.117.0 (api) - DEBUG - Responsecode indicates error; response content: b'{"message":"challenge_required","challenge":{"url":"https://i.instagram.com/challenge/AXESJMXggtcVlkhCTwE4G_ntHYd-Es30-NcjQ_jsf4cdisG_yvnVdCrWg_R4AK0iLTOfzts/AfwgfSYF5bsPInCHwrsUA6BtJvmrZqGEx-uZ5WdawRBLHr7YWFjqld_S6BTHOuQhITOO35lDNBUoEg/","api_path":"/challenge/AXESJMXggtcVlkhCTwE4G_ntHYd-Es30-NcjQ_jsf4cdisG_yvnVdCrWg_R4AK0iLTOfzts/AfwgfSYF5bsPInCHwrsUA6BtJvmrZqGEx-uZ5WdawRBLHr7YWFjqld_S6BTHOuQhITOO35lDNBUoEg/","hide_webview_header":true,"lock":true,"logout":false,"native_flow":true,"flow_render_type":0},"status":"fail","error_type":"checkpoint_challenge_required"}'
+2025-01-18 14:24:16,125 - instabot version: 0.117.0 (api) - ERROR - Request returns 400 error!
+2025-01-18 14:24:16,126 - instabot version: 0.117.0 (api) - INFO - Instagram's error message: challenge_required
+2025-01-18 14:24:16,126 - instabot version: 0.117.0 (api) - INFO - Error type: checkpoint_challenge_required
+2025-01-18 14:24:18,231 - instabot version: 0.117.0 (api_photo) - ERROR - Photo Upload failed with the following response: <Response [403]>
+2025-01-18 14:24:18,232 - instabot version: 0.117.0 (bot_photo) - INFO - Photo 'temp_image_to_share.jpg' is not uploaded.
