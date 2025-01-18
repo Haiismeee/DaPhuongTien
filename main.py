@@ -78,6 +78,25 @@ def apply_neon_filter(image):
     final_hsv = cv2.merge((h, s, v))
     neon_image = cv2.cvtColor(final_hsv, cv2.COLOR_HSV2BGR)
     return neon_image
+# Hàm xoá phông
+def remove_background(image):
+    # Chuyển ảnh từ BGR sang HSV để dễ dàng xử lý
+    hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+
+    # Định nghĩa khoảng màu nền (ví dụ màu xanh lá cây)
+    lower_bound = np.array([35, 50, 50])  # Màu xanh lá cây (HSV)
+    upper_bound = np.array([85, 255, 255])
+
+    # Tạo mặt nạ để giữ lại các phần không phải là nền
+    mask = cv2.inRange(hsv, lower_bound, upper_bound)
+
+    # Đảo ngược mặt nạ để lấy phần không phải là nền
+    mask_inv = cv2.bitwise_not(mask)
+
+    # Lọc phần không phải là nền từ ảnh gốc
+    result = cv2.bitwise_and(image, image, mask=mask_inv)
+    
+    return result
 
 # Hàm tính toán và vẽ biểu đồ màu cục bộ
 def compute_local_color_histogram(image, x, y, width, height):
@@ -124,67 +143,75 @@ class PhotoEditor:
         self.control_frame = Frame(self.root)
         self.control_frame.pack(side="top", fill="x", padx=10, pady=5)
 
-        self.canvas = Canvas(self.root, width=800, height=600, bg="lightgray")
+        self.canvas = Canvas(self.root, width=800, height=600, bg="lightgray")  
         self.canvas.pack(pady=20)
 
         self.label = Label(self.root, text="Chọn ảnh để bắt đầu", font=("Arial", 16))
         self.label.pack(pady=5)
 
-        # Open image button with icon and style
-        self.btn_open = Button(self.control_frame, text="Mở ảnh", command=self.open_image, relief="raised", font=("Arial", 12, "bold"), bg="#4CAF50", fg="white")
+        # Nút mở ảnh với biểu tượng và kiểu dáng
+        self.btn_open = Button(self.control_frame, text="Mở ảnh", command=self.open_image, relief="raised", font=("Helvetica", 12, "bold"), bg="#4CAF50", fg="black")
         self.btn_open.grid(row=0, column=0, padx=10, pady=5)
 
-        # Brightness controls
-        self.btn_brightness = Button(self.control_frame, text="Chỉnh sáng", command=self.apply_brightness, relief="raised", font=("Arial", 12, "bold"), bg="#FFC107", fg="black")
+    # Các nút điều chỉnh độ sáng
+        self.btn_brightness = Button(self.control_frame, text="Chỉnh độ sáng", command=self.apply_brightness, relief="raised", font=("Helvetica", 12, "bold"), bg="#FFC107", fg="black")
         self.btn_brightness.grid(row=0, column=1, padx=10, pady=5)
 
         self.brightness_slider = Scale(self.control_frame, from_=0, to=100, orient=HORIZONTAL, label="Độ sáng", relief="sunken", sliderlength=20)
         self.brightness_slider.set(50)
         self.brightness_slider.grid(row=0, column=2, padx=10, pady=5)
 
-        # Contrast controls
-        self.btn_contrast = Button(self.control_frame, text="Chỉnh độ tương phản", command=self.apply_contrast, relief="raised", font=("Arial", 12, "bold"), bg="#FFC107", fg="black")
-        self.btn_contrast.grid(row=0, column=3, padx=10, pady=5)
+        # Các nút điều chỉnh độ tương phản
+        self.btn_contrast = Button(self.control_frame, text="Chỉnh độ tương phản", command=self.apply_contrast, relief="raised", font=("Helvetica", 12, "bold"), bg="#FFC107", fg="black")
+        self.btn_contrast.grid(row=1, column=4, padx=10, pady=5)
 
         self.contrast_slider = Scale(self.control_frame, from_=0.1, to=2.0, orient=HORIZONTAL, resolution=0.1, label="Độ tương phản", relief="sunken", sliderlength=20)
         self.contrast_slider.set(1.0)
-        self.contrast_slider.grid(row=0, column=4, padx=10, pady=5)
+        self.contrast_slider.grid(row=1, column=5, padx=10, pady=5)
 
-        # Filter buttons
-        self.btn_sepia = Button(self.control_frame, text="Sepia", command=lambda: self.apply_color_filter('sepia'), relief="raised", font=("Arial", 12, "bold"), bg="#8E44AD", fg="white")
+        # Các nút bộ lọc màu
+        self.btn_sepia = Button(self.control_frame, text="Sepia", command=lambda: self.apply_color_filter('sepia'), relief="raised", font=("Helvetica", 12, "bold"), bg="#8E44AD", fg="black")
         self.btn_sepia.grid(row=1, column=0, padx=10, pady=5)
 
-        self.btn_bw = Button(self.control_frame, text="Đen Trắng", command=lambda: self.apply_color_filter('bw'), relief="raised", font=("Arial", 12, "bold"), bg="#8E44AD", fg="white")
+        self.btn_bw = Button(self.control_frame, text="Nền đen trắng", command=lambda: self.apply_color_filter('bw'), relief="raised", font=("Helvetica", 12, "bold"), bg="#8E44AD", fg="black")
         self.btn_bw.grid(row=1, column=1, padx=10, pady=5)
 
-        # Crop and resize button
-        self.btn_crop_resize = Button(self.control_frame, text="Cắt & Resize", command=self.apply_crop_resize, relief="raised", font=("Arial", 12, "bold"), bg="#3498DB", fg="white")
+        # Nút cắt và thay đổi kích thước ảnh
+        self.btn_crop_resize = Button(self.control_frame, text="Cắt & Resize", command=self.apply_crop_resize, relief="raised", font=("Helvetica", 12, "bold"), bg="#3498DB", fg="black")
         self.btn_crop_resize.grid(row=1, column=2, padx=10, pady=5)
 
-        # Undo button
-        self.btn_undo = Button(self.control_frame, text="Hoàn tác", command=self.undo, relief="raised", font=("Arial", 12, "bold"), bg="#F39C12", fg="white")
+        # Nút hoàn tác
+        self.btn_undo = Button(self.control_frame, text="Hoàn tác", command=self.undo, relief="raised", font=("Helvetica", 12, "bold"), bg="#F39C12", fg="black")
         self.btn_undo.grid(row=1, column=3, padx=10, pady=5)
+        
+        # Nút reset
+        self.btn_reset = Button(self.control_frame, text="Reset", command=self.reset_image, relief="raised", font=("Helvetica", 12, "bold"), bg="#F39C12", fg="black")
+        self.btn_reset.grid(row=1, column=6, padx=10, pady=5)
 
-        # Save button
-        self.btn_save = Button(self.control_frame, text="Lưu ảnh", command=self.save_image, relief="raised", font=("Arial", 12, "bold"), bg="#27AE60", fg="white")
-        self.btn_save.grid(row=1, column=4, padx=10, pady=5)
+        # Nút lưu ảnh
+        self.btn_save = Button(self.control_frame, text="Lưu ảnh", command=self.save_image, relief="raised", font=("Helvetica", 12, "bold"), bg="#27AE60", fg="black")
+        self.btn_save.grid(row=0, column=6, padx=10, pady=5)
 
-        # Biểu đồ màu cục bộ
-        self.btn_local_histogram = Button(self.control_frame, text="Biểu Đồ Màu Cục Bộ", command=self.display_local_color_histogram, relief="raised", font=("Arial", 12, "bold"), bg="#9B59B6", fg="white")
+        # Nút hiển thị biểu đồ màu cục bộ
+        self.btn_local_histogram = Button(self.control_frame, text="Biểu đồ màu cục bộ", command=self.display_local_color_histogram, relief="raised", font=("Helvetica", 12, "bold"), bg="#9B59B6", fg="black")
         self.btn_local_histogram.grid(row=1, column=0, padx=10, pady=5)
 
-        # Thêm nút chuyển sang giao diện Bộ lọc cá nhân
-        self.btn_custom_filter = Button(self.control_frame, text="Bộ lọc Cá Nhân", command=self.show_custom_filter, relief="raised", font=("Arial", 12, "bold"), bg="#3498DB", fg="white")
-        self.btn_custom_filter.grid(row=0, column=5, padx=10, pady=5)
+        # Thêm nút chuyển sang giao diện Bộ lọc Cá Nhân
+        self.btn_custom_filter = Button(self.control_frame, text="Bộ lọc cá nhân", command=self.show_custom_filter, relief="raised", font=("Helvetica", 12, "bold"), bg="#3498DB", fg="black")
+        self.btn_custom_filter.grid(row=0, column=4, padx=10, pady=5)
 
         # Nút "Chọn bộ lọc"
-        self.btn_select_filter = Button(self.control_frame, text="Chọn bộ lọc", command=self.select_filter, relief="raised", font=("Arial", 12, "bold"), bg="#3498DB", fg="white")
-        self.btn_select_filter.grid(row=1, column=5, padx=10, pady=5)
+        self.btn_select_filter = Button(self.control_frame, text="Chọn bộ lọc", command=self.select_filter, relief="raised", font=("Helvetica", 12, "bold"), bg="#3498DB", fg="black")
+        self.btn_select_filter.grid(row=0, column=3, padx=10, pady=5)
 
+        # Thêm nút "Xóa phông"
+        self.btn_remove_background = Button(self.control_frame, text="Xóa phông", command=self.remove_background, relief="raised", font=("Helvetica", 12, "bold"), bg="#FF6347", fg="black")
+        self.btn_remove_background.grid(row=0, column=5, padx=10, pady=5)
 
         self.image = None
         self.display_image = None
         self.history = []  # Lưu lại lịch sử ảnh để hoàn tác
+
 
     def open_image(self):
         file_path = filedialog.askopenfilename(filetypes=[("Image Files", "*.png;*.jpg;*.jpeg;*.bmp")])
@@ -193,7 +220,7 @@ class PhotoEditor:
            self.history = [self.image.copy()]  # Lưu ảnh gốc vào lịch sử
            self.display_image_on_canvas()
         else:
-           print("Không có file nào được chọn.")
+            print("Không có file nào được chọn.")
 
     def save_image(self):
         if self.image is not None:
@@ -227,7 +254,8 @@ class PhotoEditor:
             self.image = crop_and_resize(self.image, 50, 50, 100, 100, 200, 200)
             self.history.append(self.image.copy())  # Lưu lại lịch sử ảnh
             self.display_image_on_canvas()
-       # Bộ lọc Luminous: Tăng cường độ sáng và làm sáng da
+        
+    # Bộ lọc Luminous: Tăng cường độ sáng và làm sáng da
     def apply_luminous_filter(image):
         hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
         h, s, v = cv2.split(hsv)
@@ -237,7 +265,7 @@ class PhotoEditor:
         luminous_image = cv2.cvtColor(final_hsv, cv2.COLOR_HSV2BGR)
         return luminous_image
 
-# Bộ lọc Glowing: Tạo hiệu ứng phát sáng
+    # Bộ lọc Glowing: Tạo hiệu ứng phát sáng
     def apply_glowing_filter(image):
         hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
         h, s, v = cv2.split(hsv)
@@ -249,7 +277,7 @@ class PhotoEditor:
         glowing_image = cv2.cvtColor(final_hsv, cv2.COLOR_HSV2BGR)
         return glowing_image
 
-# Bộ lọc Vintage: Tạo hiệu ứng cổ điển với tông màu ấm
+    # Bộ lọc Vintage: Tạo hiệu ứng cổ điển với tông màu ấm
     def apply_vintage_filter(image):
         kernel = np.array([[0.393, 0.769, 0.189],
                        [0.349, 0.686, 0.168],
@@ -258,7 +286,7 @@ class PhotoEditor:
         vintage_image = np.clip(vintage_image, 0, 255)
         return vintage_image
 
-# Bộ lọc Neon: Tạo hiệu ứng sáng neon
+    # Bộ lọc Neon: Tạo hiệu ứng sáng neon
     def apply_neon_filter(image):
         hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
         h, s, v = cv2.split(hsv)
@@ -269,12 +297,32 @@ class PhotoEditor:
         final_hsv = cv2.merge((h, s, v))    
         neon_image = cv2.cvtColor(final_hsv, cv2.COLOR_HSV2BGR)
         return neon_image
+     # Hàm xử lý xóa phông
+    def remove_background(self):
+        if self.image is not None:
+            self.image = remove_background(self.image)
+            self.history.append(self.image.copy())  # Lưu lại lịch sử ảnh
+            self.display_image_on_canvas()
+
+    def display_image_on_canvas(self):
+        if self.image is not None:
+            image_rgb = cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB)
+            image_pil = Image.fromarray(image_rgb)
+            self.display_image = ImageTk.PhotoImage(image_pil)
+            self.canvas.create_image(400, 300, image=self.display_image, anchor="center")
 
     def undo(self):
         if len(self.history) > 1:
             self.history.pop()  # Loại bỏ ảnh hiện tại khỏi lịch sử
             self.image = self.history[-1]  # Quay lại ảnh trước đó
             self.display_image_on_canvas()
+    
+    def reset_image(self):
+        if len(self.history) > 0:
+            # Khôi phục ảnh gốc từ lịch sử
+            self.image = self.history[0]  # Lấy ảnh gốc
+            self.display_image_on_canvas()
+ 
 
     def display_image_on_canvas(self):
         if self.image is not None:
