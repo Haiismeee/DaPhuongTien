@@ -139,80 +139,83 @@ class PhotoEditor:
         self.title_label = Label(self.root, text="Bộ lọc phong cách cá nhân", font=("Helvetica", 20, "bold"), fg="blue")
         self.title_label.pack(pady=10)
 
-        # Frame for controls
-        self.control_frame = Frame(self.root)
-        self.control_frame.pack(side="top", fill="x", padx=10, pady=5)
+        # Frame cho các nút điều khiển (bên trái)
+        self.left_frame = Frame(self.root, width=300, height=600, padx=10, pady=5)
+        self.left_frame.pack(side="left", fill="y")
 
-        self.canvas = Canvas(self.root, width=800, height=600, bg="lightgray")  
+        # Frame cho ảnh (bên phải)
+        self.right_frame = Frame(self.root, width=800, height=600, padx=10, pady=5)
+        self.right_frame.pack(side="right", fill="both", expand=True)
+
+        self.canvas = Canvas(self.right_frame, width=800, height=600, bg="lightgray")
         self.canvas.pack(pady=20)
 
-        self.label = Label(self.root, text="Chọn ảnh để bắt đầu", font=("Arial", 16))
+        self.label = Label(self.left_frame, text="Chọn ảnh để bắt đầu", font=("Arial", 16))
         self.label.pack(pady=5)
 
-        # Nút mở ảnh với biểu tượng và kiểu dáng
-        self.btn_open = Button(self.control_frame, text="Mở ảnh", command=self.open_image, relief="raised", font=("Helvetica", 12, "bold"), bg="#4CAF50", fg="black")
-        self.btn_open.grid(row=0, column=0, padx=10, pady=5)
+        # Nút mở ảnh với biểu tượng emoji
+        self.btn_open = Button(self.left_frame, text="📂 Mở ảnh", command=self.open_image, relief="raised", font=("Helvetica", 12, "bold"), bg="#4CAF50", fg="black")
+        self.btn_open.pack(fill="x", padx=10, pady=5)
 
-    # Các nút điều chỉnh độ sáng
-        self.btn_brightness = Button(self.control_frame, text="Chỉnh độ sáng", command=self.apply_brightness, relief="raised", font=("Helvetica", 12, "bold"), bg="#FFC107", fg="black")
-        self.btn_brightness.grid(row=0, column=1, padx=10, pady=5)
+        # Các nút điều chỉnh độ sáng
+        self.btn_brightness = Button(self.left_frame, text="🔆 Chỉnh độ sáng", command=self.apply_brightness, relief="raised", font=("Helvetica", 12, "bold"), bg="#FFC107", fg="black")
+        self.btn_brightness.pack(fill="x", padx=10, pady=5)
 
-        self.brightness_slider = Scale(self.control_frame, from_=0, to=100, orient=HORIZONTAL, label="Độ sáng", relief="sunken", sliderlength=20)
+        self.brightness_slider = Scale(self.left_frame, from_=0, to=100, orient=HORIZONTAL, label="Độ sáng", relief="sunken", sliderlength=20)
         self.brightness_slider.set(50)
-        self.brightness_slider.grid(row=0, column=2, padx=10, pady=5)
+        self.brightness_slider.pack(fill="x", padx=10, pady=5)
 
         # Các nút điều chỉnh độ tương phản
-        self.btn_contrast = Button(self.control_frame, text="Chỉnh độ tương phản", command=self.apply_contrast, relief="raised", font=("Helvetica", 12, "bold"), bg="#FFC107", fg="black")
-        self.btn_contrast.grid(row=1, column=4, padx=10, pady=5)
+        self.btn_contrast = Button(self.left_frame, text="🎛️ Chỉnh độ tương phản", command=self.apply_contrast, relief="raised", font=("Helvetica", 12, "bold"), bg="#FFC107", fg="black")
+        self.btn_contrast.pack(fill="x", padx=10, pady=5)
 
-        self.contrast_slider = Scale(self.control_frame, from_=0.1, to=2.0, orient=HORIZONTAL, resolution=0.1, label="Độ tương phản", relief="sunken", sliderlength=20)
+        self.contrast_slider = Scale(self.left_frame, from_=0.1, to=2.0, orient=HORIZONTAL, resolution=0.1, label="Độ tương phản", relief="sunken", sliderlength=20)
         self.contrast_slider.set(1.0)
-        self.contrast_slider.grid(row=1, column=5, padx=10, pady=5)
+        self.contrast_slider.pack(fill="x", padx=10, pady=5)
 
         # Các nút bộ lọc màu
-        self.btn_sepia = Button(self.control_frame, text="Sepia", command=lambda: self.apply_color_filter('sepia'), relief="raised", font=("Helvetica", 12, "bold"), bg="#8E44AD", fg="black")
-        self.btn_sepia.grid(row=1, column=0, padx=10, pady=5)
+        self.btn_sepia = Button(self.left_frame, text="🎨 Sepia", command=lambda: self.apply_color_filter('sepia'), relief="raised", font=("Helvetica", 12, "bold"), bg="#8E44AD", fg="black")
+        self.btn_sepia.pack(fill="x", padx=10, pady=5)
 
-        self.btn_bw = Button(self.control_frame, text="Nền đen trắng", command=lambda: self.apply_color_filter('bw'), relief="raised", font=("Helvetica", 12, "bold"), bg="#8E44AD", fg="black")
-        self.btn_bw.grid(row=1, column=1, padx=10, pady=5)
+        self.btn_bw = Button(self.left_frame, text="🖤 Nền đen trắng", command=lambda: self.apply_color_filter('bw'), relief="raised", font=("Helvetica", 12, "bold"), bg="#8E44AD", fg="black")
+        self.btn_bw.pack(fill="x", padx=10, pady=5)
 
         # Nút cắt và thay đổi kích thước ảnh
-        self.btn_crop_resize = Button(self.control_frame, text="Cắt & Resize", command=self.apply_crop_resize, relief="raised", font=("Helvetica", 12, "bold"), bg="#3498DB", fg="black")
-        self.btn_crop_resize.grid(row=1, column=2, padx=10, pady=5)
+        self.btn_crop_resize = Button(self.left_frame, text="✂️ Cắt & Resize", command=self.apply_crop_resize, relief="raised", font=("Helvetica", 12, "bold"), bg="#3498DB", fg="black")
+        self.btn_crop_resize.pack(fill="x", padx=10, pady=5)
 
         # Nút hoàn tác
-        self.btn_undo = Button(self.control_frame, text="Hoàn tác", command=self.undo, relief="raised", font=("Helvetica", 12, "bold"), bg="#F39C12", fg="black")
-        self.btn_undo.grid(row=1, column=3, padx=10, pady=5)
-        
+        self.btn_undo = Button(self.left_frame, text="↩️ Hoàn tác", command=self.undo, relief="raised", font=("Helvetica", 12, "bold"), bg="#F39C12", fg="black")
+        self.btn_undo.pack(fill="x", padx=10, pady=5)
+
         # Nút reset
-        self.btn_reset = Button(self.control_frame, text="Reset", command=self.reset_image, relief="raised", font=("Helvetica", 12, "bold"), bg="#F39C12", fg="black")
-        self.btn_reset.grid(row=1, column=6, padx=10, pady=5)
+        self.btn_reset = Button(self.left_frame, text="🔄 Reset", command=self.reset_image, relief="raised", font=("Helvetica", 12, "bold"), bg="#F39C12", fg="black")
+        self.btn_reset.pack(fill="x", padx=10, pady=5)
 
         # Nút lưu ảnh
-        self.btn_save = Button(self.control_frame, text="Lưu ảnh", command=self.save_image, relief="raised", font=("Helvetica", 12, "bold"), bg="#27AE60", fg="black")
-        self.btn_save.grid(row=0, column=6, padx=10, pady=5)
+        self.btn_save = Button(self.left_frame, text="💾 Lưu ảnh", command=self.save_image, relief="raised", font=("Helvetica", 12, "bold"), bg="#27AE60", fg="black")
+        self.btn_save.pack(fill="x", padx=10, pady=5)
 
         # Nút hiển thị biểu đồ màu cục bộ
-        self.btn_local_histogram = Button(self.control_frame, text="Biểu đồ màu cục bộ", command=self.display_local_color_histogram, relief="raised", font=("Helvetica", 12, "bold"), bg="#9B59B6", fg="black")
-        self.btn_local_histogram.grid(row=1, column=0, padx=10, pady=5)
+        self.btn_local_histogram = Button(self.left_frame, text="📊 Biểu đồ màu cục bộ", command=self.display_local_color_histogram, relief="raised", font=("Helvetica", 12, "bold"), bg="#9B59B6", fg="black")
+        self.btn_local_histogram.pack(fill="x", padx=10, pady=5)
 
         # Thêm nút chuyển sang giao diện Bộ lọc Cá Nhân
-        self.btn_custom_filter = Button(self.control_frame, text="Bộ lọc cá nhân", command=self.show_custom_filter, relief="raised", font=("Helvetica", 12, "bold"), bg="#3498DB", fg="black")
-        self.btn_custom_filter.grid(row=0, column=4, padx=10, pady=5)
+        self.btn_custom_filter = Button(self.left_frame, text="🎨 Bộ lọc cá nhân", command=self.show_custom_filter, relief="raised", font=("Helvetica", 12, "bold"), bg="#3498DB", fg="black")
+        self.btn_custom_filter.pack(fill="x", padx=10, pady=5)
 
         # Nút "Chọn bộ lọc"
-        self.btn_select_filter = Button(self.control_frame, text="Chọn bộ lọc", command=self.select_filter, relief="raised", font=("Helvetica", 12, "bold"), bg="#3498DB", fg="black")
-        self.btn_select_filter.grid(row=0, column=3, padx=10, pady=5)
+        self.btn_select_filter = Button(self.left_frame, text="🛠️ Chọn bộ lọc", command=self.select_filter, relief="raised", font=("Helvetica", 12, "bold"), bg="#3498DB", fg="black")
+        self.btn_select_filter.pack(fill="x", padx=10, pady=5)
 
         # Thêm nút "Xóa phông"
-        self.btn_remove_background = Button(self.control_frame, text="Xóa phông", command=self.remove_background, relief="raised", font=("Helvetica", 12, "bold"), bg="#FF6347", fg="black")
-        self.btn_remove_background.grid(row=0, column=5, padx=10, pady=5)
+        self.btn_remove_background = Button(self.left_frame, text="❌ Xóa phông", command=self.remove_background, relief="raised", font=("Helvetica", 12, "bold"), bg="#FF6347", fg="black")
+        self.btn_remove_background.pack(fill="x", padx=10, pady=5)
 
         self.image = None
         self.display_image = None
         self.history = []  # Lưu lại lịch sử ảnh để hoàn tác
-
-
+        
     def open_image(self):
         file_path = filedialog.askopenfilename(filetypes=[("Image Files", "*.png;*.jpg;*.jpeg;*.bmp")])
         if file_path:  # Kiểm tra nếu file_path không rỗng (người dùng chọn file)
@@ -358,8 +361,7 @@ class PhotoEditor:
             Button(filter_window, text=filter_name, command=lambda filter_name=filter_name: apply_selected_filter(filter_name)).grid(row=i, column=0, padx=10, pady=5)
 
     def show_custom_filter(self):
-        CustomFilterWindow(self.root, self)
-    
+        CustomFilterWindow(self.root, self)   
 class CustomFilterWindow:
     def __init__(self, root, parent_app):
         self.root = root
