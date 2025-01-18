@@ -36,6 +36,48 @@ def crop_and_resize(image, x, y, w, h, new_width, new_height):
     cropped_image = image[y:y+h, x:x+w]
     resized_image = cv2.resize(cropped_image, (new_width, new_height))
     return resized_image
+# Bộ lọc Luminous: Tăng cường độ sáng và làm sáng da
+def apply_luminous_filter(image):
+    hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+    h, s, v = cv2.split(hsv)
+    v = cv2.add(v, 50)  # Tăng độ sáng
+    v = np.clip(v, 0, 255)
+    final_hsv = cv2.merge((h, s, v))
+    luminous_image = cv2.cvtColor(final_hsv, cv2.COLOR_HSV2BGR)
+    return luminous_image
+
+# Bộ lọc Glowing: Tạo hiệu ứng phát sáng
+def apply_glowing_filter(image):
+    hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+    h, s, v = cv2.split(hsv)
+    v = cv2.add(v, 100)  # Tăng độ sáng lên mạnh mẽ
+    s = cv2.multiply(s, 1.2)  # Tăng cường độ bão hòa màu
+    v = np.clip(v, 0, 255)
+    s = np.clip(s, 0, 255)
+    final_hsv = cv2.merge((h, s, v))
+    glowing_image = cv2.cvtColor(final_hsv, cv2.COLOR_HSV2BGR)
+    return glowing_image
+
+# Bộ lọc Vintage: Tạo hiệu ứng cổ điển với tông màu ấm
+def apply_vintage_filter(image):
+    kernel = np.array([[0.393, 0.769, 0.189],
+                       [0.349, 0.686, 0.168],
+                       [0.272, 0.534, 0.131]])
+    vintage_image = cv2.transform(image, kernel)
+    vintage_image = np.clip(vintage_image, 0, 255)
+    return vintage_image
+
+# Bộ lọc Neon: Tạo hiệu ứng sáng neon
+def apply_neon_filter(image):
+    hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+    h, s, v = cv2.split(hsv)
+    s = cv2.multiply(s, 1.5)  # Tăng độ bão hòa mạnh mẽ
+    v = cv2.add(v, 50)  # Tăng độ sáng mạnh mẽ
+    s = np.clip(s, 0, 255)
+    v = np.clip(v, 0, 255)
+    final_hsv = cv2.merge((h, s, v))
+    neon_image = cv2.cvtColor(final_hsv, cv2.COLOR_HSV2BGR)
+    return neon_image
 
 # Hàm tính toán và vẽ biểu đồ màu cục bộ
 def compute_local_color_histogram(image, x, y, width, height):
@@ -133,7 +175,12 @@ class PhotoEditor:
 
         # Thêm nút chuyển sang giao diện Bộ lọc cá nhân
         self.btn_custom_filter = Button(self.control_frame, text="Bộ lọc Cá Nhân", command=self.show_custom_filter, relief="raised", font=("Arial", 12, "bold"), bg="#3498DB", fg="white")
-        self.btn_custom_filter.grid(row=0, column=0, padx=10, pady=5)
+        self.btn_custom_filter.grid(row=0, column=5, padx=10, pady=5)
+
+        # Nút "Chọn bộ lọc"
+        self.btn_select_filter = Button(self.control_frame, text="Chọn bộ lọc", command=self.select_filter, relief="raised", font=("Arial", 12, "bold"), bg="#3498DB", fg="white")
+        self.btn_select_filter.grid(row=1, column=5, padx=10, pady=5)
+
 
         self.image = None
         self.display_image = None
@@ -180,6 +227,48 @@ class PhotoEditor:
             self.image = crop_and_resize(self.image, 50, 50, 100, 100, 200, 200)
             self.history.append(self.image.copy())  # Lưu lại lịch sử ảnh
             self.display_image_on_canvas()
+       # Bộ lọc Luminous: Tăng cường độ sáng và làm sáng da
+    def apply_luminous_filter(image):
+        hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+        h, s, v = cv2.split(hsv)
+        v = cv2.add(v, 50)  # Tăng độ sáng
+        v = np.clip(v, 0, 255)
+        final_hsv = cv2.merge((h, s, v))
+        luminous_image = cv2.cvtColor(final_hsv, cv2.COLOR_HSV2BGR)
+        return luminous_image
+
+# Bộ lọc Glowing: Tạo hiệu ứng phát sáng
+    def apply_glowing_filter(image):
+        hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+        h, s, v = cv2.split(hsv)
+        v = cv2.add(v, 100)  # Tăng độ sáng lên mạnh mẽ
+        s = cv2.multiply(s, 1.2)  # Tăng cường độ bão hòa màu
+        v = np.clip(v, 0, 255)
+        s = np.clip(s, 0, 255)
+        final_hsv = cv2.merge((h, s, v))
+        glowing_image = cv2.cvtColor(final_hsv, cv2.COLOR_HSV2BGR)
+        return glowing_image
+
+# Bộ lọc Vintage: Tạo hiệu ứng cổ điển với tông màu ấm
+    def apply_vintage_filter(image):
+        kernel = np.array([[0.393, 0.769, 0.189],
+                       [0.349, 0.686, 0.168],
+                       [0.272, 0.534, 0.131]])
+        vintage_image = cv2.transform(image, kernel)
+        vintage_image = np.clip(vintage_image, 0, 255)
+        return vintage_image
+
+# Bộ lọc Neon: Tạo hiệu ứng sáng neon
+    def apply_neon_filter(image):
+        hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+        h, s, v = cv2.split(hsv)
+        s = cv2.multiply(s, 1.5)  # Tăng độ bão hòa mạnh mẽ
+        v = cv2.add(v, 50)  # Tăng độ sáng mạnh mẽ
+        s = np.clip(s, 0, 255)
+        v = np.clip(v, 0, 255)
+        final_hsv = cv2.merge((h, s, v))    
+        neon_image = cv2.cvtColor(final_hsv, cv2.COLOR_HSV2BGR)
+        return neon_image
 
     def undo(self):
         if len(self.history) > 1:
@@ -198,10 +287,31 @@ class PhotoEditor:
         if self.image is not None:
             x, y, width, height = 50, 50, 150, 150  # Vùng bạn muốn tính toán biểu đồ màu
             show_local_color_histogram(self.image, x, y, width, height)
+    def select_filter(self):
+        # Cửa sổ chọn bộ lọc
+        filter_window = Toplevel(self.root)
+        filter_window.title("Chọn bộ lọc")
+
+        def apply_selected_filter(selected_filter):
+            if selected_filter == "Luminous":
+                self.image = apply_luminous_filter(self.image)
+            elif selected_filter == "Glowing":
+                self.image = apply_glowing_filter(self.image)
+            elif selected_filter == "Vintage":
+                self.image = apply_vintage_filter(self.image)
+            elif selected_filter == "Neon":
+                self.image = apply_neon_filter(self.image)
+            self.display_image_on_canvas()  # Gọi phương thức đúng để hiển thị ảnh
+            filter_window.destroy()
+
+        # Thêm các nút lựa chọn bộ lọc
+        filters = ["Luminous", "Glowing", "Vintage", "Neon"]
+        for i, filter_name in enumerate(filters):
+            Button(filter_window, text=filter_name, command=lambda filter_name=filter_name: apply_selected_filter(filter_name)).grid(row=i, column=0, padx=10, pady=5)
 
     def show_custom_filter(self):
         CustomFilterWindow(self.root, self)
-
+    
 class CustomFilterWindow:
     def __init__(self, root, parent_app):
         self.root = root
